@@ -57,7 +57,7 @@ class Pix:
         async for msg in self.ws_client:
             if msg.type == aiohttp.WSMsgType.TEXT:
                 if not msg.data:
-                    logging.warning('got websocket message containing no data', msg)
+                    logging.info('got websocket message containing no data, probably just server confirming subscription success')
                 else:
                     data = json.loads(msg.data)
 
@@ -89,6 +89,10 @@ class Pix:
         self.ws_subscriptions[event] = subscription
         await self.ws_client.send_json([Event_Code.SUBSCRIBE.value, event])
         return subscription
+
+    async def use_subscription(self, event, subscription):
+        self.ws_subscriptions[event] = subscription
+        await self.ws_client.send_json([Event_Code.SUBSCRIBE.value, event])
 
     def subscription_filter_endpoint(self, event_or_subscription, endpoint, behavior):
         subscription = self.ws_subscriptions.get(event_or_subscription, event_or_subscription)
