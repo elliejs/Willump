@@ -1,5 +1,6 @@
 from enum import Enum
 import asyncio
+import logging
 
 class Event_Code(Enum):
     SUBSCRIBE = 5
