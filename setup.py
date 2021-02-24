@@ -10,7 +10,7 @@ setup(
     name='Pix',
     version=__version__,
     author='Eleanor Juno Silver',
-    author_email='elliejs@zork.pw',
+    author_email='ejsilver@wpi.edu',
     license='MIT',
     url='https://github.com/elliejs/Pix/',
     long_description_content_type='text/markdown',
