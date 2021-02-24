@@ -20,28 +20,31 @@ print(await response.json())
 ```
 
 ## Subscribing to websocket events
-Pix's websocket can subscribe to LCU events. Pix can attach a user defined `default_event_handler` to an event subscription which will be fired any time pix receives a websocket message pertaining to the event.
+Pix's websocket can subscribe to LCU events. Pix can attach a user defined `default_event_handler` to an event subscription which will be fired any time pix receives a websocket message pertaining to the event. `default_event_handler` is a function which accepts json formatted data as its sole argument and returns None, or a disposable value.
 ```py
-#subscription = pix.subscribe('event', default_event_handler)
-#default_event_handler is a function which accepts json formatted data as its sole argument and returns None, or a disposable value.
-#attaching a specialized default event handler to the subscription
 async def un_default_event_handler(data):
   print("user defined default event handler")
   print(json.dumps(data, indent=4, sort_keys=True))
 
 my_first_subscription = await pix.subscribe('OnJsonApiEvent', un_default_event_handler)
-#if you don't want to attach your own default event handler, it can be omitted
-#my_first_subscription = await pix.subscribe('OnJsonApiEvent')
 ```
-re-subscribing to an event invalidates the first subscription.
+
+Re-subscribing to an event invalidates the first subscription.
 ```py
 old_subscription = await pix.subscribe('OnJsonApiEvent', un_default_event_handler)
 new_subscription = await pix.subscribe('OnJsonApiEvent')
 ```
-When pix receives an `'OnJsonApiEvent'`, the default_event_handler will be fired instead of the user defined `un_default_event_handler`, because pix respects `new_subscription` as the driver for the event
+When pix receives an `'OnJsonApiEvent'`, the default_event_handler will be fired instead of the user defined `un_default_event_handler`, because pix respects `new_subscription` as the driver for the event. Pix can re-instantiate old subscriptions:
+```py
+pix.use_subscription('OnJsonApiEvent', old_subscription)
+```
 
+Pix can also unsubscribe from events to stop listening for them:
+```py
+await pix.unsubscribe('OnJsonApiEvent')
+```
 
-Pix can also attach a further kind of filter on websocket event subscriptions -- endpoint filters. An endpoint filter is a function that runs when a certain endpoint is specified by the event response. There are two kinds of endpoint filters. path filters end in '/', and run when the specified endpoint is any sub-endpoint of the path, and uri filters, which run when the endpoint is the same as the filter. You can attach endpoint filters through the subscription itself, via Pix with the subscription instance, or via Pix by event name (as there is only ever one active subscription per event at a time). endpoint handlers take the same signature as default event handlers. They must take in json formatted data and return nothing, or a disposable value. uri handlers and path handlers will both fire if they overlap.
+Pix can also attach a further kind of filter on websocket event subscriptions -- endpoint filters. An endpoint filter is a function that runs when a certain endpoint is specified by the event response. There are two kinds of endpoint filters. path filters end in '/', and run when the specified endpoint is any sub-endpoint of the path, and uri filters, which run when the endpoint is the same as the filter. You can attach endpoint filters through the subscription itself, via Pix with the subscription instance, or via Pix by event name (as there is only ever one active subscription per event at a time). endpoint handlers take the same signature as default event handlers. They must take in json formatted data and return None, or a disposable value. uri handlers and path handlers will both fire if they overlap.
 ```py
 async def custom_uri_handler_1(data):
   print('current-summoner uri got triggered. This is custom_uri_handler_1')
