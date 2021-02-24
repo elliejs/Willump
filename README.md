@@ -60,7 +60,7 @@ async def custom_path_handler(data):
 my_first_subscription.filter_endpoint('/lol-summoner/v1/current-summoner',
                                       custom_uri_handler_1)
 #adding uri endpoint filter via subscription instance through Pix
-pix.subscription_filter_endpoint(my_second_subscription, '/lol-summoner/v1/status',
+pix.subscription_filter_endpoint(my_first_subscription, '/lol-summoner/v1/status',
                                  custom_uri_handler_2)
 
 #adding path endpoint filter via event name through Pix
