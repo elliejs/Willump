@@ -8,8 +8,8 @@ class Event_Code(Enum):
 
 class EventSubscription:
     async def _default_behavior(self, data):
-        print('EventSubscription default handler got event:')
-        print(json.dumps(data, indent=4, sort_keys=True))
+        logging.info('EventSubscription default handler got event:')
+        logging.info(json.dumps(data, indent=4, sort_keys=True))
 
     def __init__(self, default_behavior=None):
         self._registered_uris = {}

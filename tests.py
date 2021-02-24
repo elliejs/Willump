@@ -4,7 +4,7 @@ import asyncio
 
 async def main():
     icon_num = randint(50, 78)
-    pix = await Pix().start()
+    pix = await Pix.start()
     # await pix.start()
     resp = await pix.request('put', '/lol-summoner/v1/current-summoner/icon',
                             data={"profileIconId": icon_num})
@@ -13,6 +13,10 @@ async def main():
     else:
         print(resp)
 
+
+#     await pix.subscribe("OnJsonApiEvent")
+#     await asyncio.sleep(10)
+    # await pix.unsubscribe("OnJsonApiEvent")
     await pix.close()
 
 if __name__ == '__main__':

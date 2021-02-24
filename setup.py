@@ -1,6 +1,6 @@
 from setuptools import setup
 
-__version__ = '1.0.0'
+__version__ = '0.0.1'
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
@@ -15,7 +15,7 @@ setup(
     url='https://github.com/elliejs/Pix/',
     long_description_content_type='text/markdown',
     long_description=long_description,
-    packages=['Pix'],
+    packages=['pix'],
     install_requires=[
         'aiohttp',
         'psutil'

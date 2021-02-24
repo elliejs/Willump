@@ -4,22 +4,22 @@ import json
 from subscription import *
 from proc_utils import *
 
+import logging
 
 class Pix:
-    """docstring for Pix."""
-
     _headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json'}
 
-    async def start(self):
+    async def start():
+        self = Pix()
         self.process = None
         while not self.process:
             self.process = find_LCU_process()
-            print("couldn't find LCUx process")
-            asyncio.sleep(0.5)
+            logging.debug("couldn't find LCUx process yet. Re-searching process list...")
+            await asyncio.sleep(0.5)
 
-        print("found LCUx process\n", self.process)
+        logging.info("found LCUx process", self.process)
 
         process_args = parse_cmdline_args(self.process.cmdline())
 
@@ -33,53 +33,49 @@ class Pix:
         while True:
             try:
                 resp = await self.request('get', '/riotclient/ux-state')
-                print("connected to LCUx server\n", resp)
+                if resp.status == 200:
+                    logging.info("connected to LCUx server", resp.status)
+                else:
+                    logging.warning("connected to LCUx https server, but got an invalid response for a known uri. Response status code:", resp.status)
                 break
             except aiohttp.client_exceptions.ClientConnectorError:
-                print("can't connect to LCUx server")
+                logging.warn("can't connect to LCUx server. Retrying...") #this might be too much log spam
                 await asyncio.sleep(0.5)
                 pass
 
         self.ws_session = aiohttp.ClientSession(auth=aiohttp.BasicAuth('riot', self._auth_key), headers=self._headers)
         self.ws_client = await self.ws_session.ws_connect(f'wss://127.0.0.1:{self._port}', ssl=False)
         self.ws_subscriptions = {}
+        self.subscription_tasks = []
         self.ws_loop_task = asyncio.create_task(self.begin_ws_loop())
-        print("began LCUx websocket loop")
-        print("connected")
+        logging.info("began LCUx websocket loop")
+        logging.info("Pix is fully connected")
         return self
 
 
     async def begin_ws_loop(self):
-        self.ws_client_tasks = []
-
         async for msg in self.ws_client:
             if msg.type == aiohttp.WSMsgType.TEXT:
                 if not msg.data:
-                    print('msg contains no data. continuing...')
-                    continue
+                    logging.warning('got websocket message containing no data', msg)
                 else:
                     data = json.loads(msg.data)
-                    if data[0] != Event_Code.RESPONSE.value:
-                        print('message is not a response (Event_Code.RESPONSE). breaking...')
-                        break
 
                     subscription = self.ws_subscriptions.get(data[1]) #If this raises KeyError, it oughta.
-                    self.ws_client_tasks += subscription.tasks(data[2])
+                    self.subscription_tasks += subscription.tasks(data[2])
 
-                    if self.ws_client_tasks:
-                        done, pending = await asyncio.wait(self.ws_client_tasks, timeout=0)
+                    if self.subscription_tasks:
+                        done, pending = await asyncio.wait(self.subscription_tasks, timeout=0)
                         for task in done:
                             _ = await task
-                            self.ws_client_tasks.remove(task)
+                            self.subscription_tasks.remove(task)
 
             elif msg.type == aiohttp.WSMsgType.ERROR:
-                print('received websocket message ERROR. breaking...')
+                logging.warning('received websocket message ERROR, ending listening loop')
                 break
             elif msg.type == aiohttp.WSMsgType.CLOSED:
-                print('received websocket message CLOSE. breaking...')
+                logging.info('received websocket message CLOSE, ending listening loop')
                 break
-
-            await asyncio.gather(*self.ws_client_tasks)
 
         #FIXME: make SSL work ya chump
     async def request(self, method, endpoint, **kwargs):
@@ -89,25 +85,23 @@ class Pix:
         return await self.https_session.request(method, f'https://127.0.0.1:{self._port}{endpoint}', ssl=False, **kwargs)
 
     async def subscribe(self, event, default_behavior=None):
-        print("subscribing to: " + event)
         subscription = EventSubscription(default_behavior)
         self.ws_subscriptions[event] = subscription
         await self.ws_client.send_json([Event_Code.SUBSCRIBE.value, event])
         return subscription
 
-    def subscriptionFilterEndpoint(self, event, endpoint, behavior):
-        subscription = self.ws_subscriptions[event]
+    def subscription_filter_endpoint(self, event_or_subscription, endpoint, behavior):
+        subscription = self.ws_subscriptions.get(event_or_subscription, event_or_subscription)
         subscription.filter_endpoint(endpoint, behavior)
 
-    def subscriptionUnfilterEndpoint(self, event, endpoint):
-        subscription = self.ws_subscriptions[event]
+    def subscription_unfilter_endpoint(self, event_or_subscription, endpoint):
+        subscription = self.ws_subscriptions.get(event_or_subscription, event_or_subscription)
         subscription.unfilter_endpoint(endpoint, behavior)
 
     def event_from_endpoint(self, endpoint):
         pass #TODO
 
     async def unsubscribe(self, event):
-        print("unsubscribing from: " + event)
         await self.ws_client.send_json([Event_Code.UNSUBSCRIBE.value, event])
         del self.ws_subscriptions[event]
 
@@ -116,3 +110,4 @@ class Pix:
         await self.ws_client.close()
         await self.ws_session.close()
         await self.ws_loop_task
+        await asyncio.gather(*self.subscription_tasks)
