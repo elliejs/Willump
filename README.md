@@ -9,7 +9,7 @@ import asyncio
 
 pix = await Pix.start()
 ```
-This starts pix's http and websocket clients, and blocks until pix can connect to the league client Ux process and server
+This starts pix's http and websocket clients, and blocks until pix can connect to the League Client Ux process and server
 
 ## Using HTTP methods
 Pix can can make http requests to any LCU endpoint
@@ -20,7 +20,7 @@ print(await response.json())
 ```
 
 ## Subscribing to websocket events
-Pix's websocket can subscribe to LCU events. Pix can attach a user defined `default_event_handler` to an event subscription which will be fired any time pix receives a websocket message pertaining to the event. `default_event_handler` is a function which accepts json formatted data as its sole argument and returns None, or a disposable value.
+Pix's websocket can subscribe to LCU events. Pix can attach a user defined `default_event_handler` to an event subscription which will be fired any time pix receives a websocket message pertaining to the event and the message is not otherwise handled. `default_event_handler` is a function which accepts json formatted data as its sole argument and returns None, or a disposable value.
 ```py
 async def un_default_event_handler(data):
   print("user defined default event handler")
@@ -31,12 +31,11 @@ my_first_subscription = await pix.subscribe('OnJsonApiEvent', un_default_event_h
 
 Re-subscribing to an event invalidates the first subscription.
 ```py
-old_subscription = await pix.subscribe('OnJsonApiEvent', un_default_event_handler)
 new_subscription = await pix.subscribe('OnJsonApiEvent')
 ```
 When pix receives an `'OnJsonApiEvent'`, the default_event_handler will be fired instead of the user defined `un_default_event_handler`, because pix respects `new_subscription` as the driver for the event. Pix can re-instantiate old subscriptions:
 ```py
-pix.use_subscription('OnJsonApiEvent', old_subscription)
+pix.use_subscription('OnJsonApiEvent', my_first_subscription)
 ```
 
 Pix can also unsubscribe from events to stop listening for them:
@@ -44,7 +43,8 @@ Pix can also unsubscribe from events to stop listening for them:
 await pix.unsubscribe('OnJsonApiEvent')
 ```
 
-Pix can also attach a further kind of filter on websocket event subscriptions -- endpoint filters. An endpoint filter is a function that runs when a certain endpoint is specified by the event response. There are two kinds of endpoint filters. path filters end in '/', and run when the specified endpoint is any sub-endpoint of the path, and uri filters, which run when the endpoint is the same as the filter. You can attach endpoint filters through the subscription itself, via Pix with the subscription instance, or via Pix by event name (as there is only ever one active subscription per event at a time). endpoint handlers take the same signature as default event handlers. They must take in json formatted data and return None, or a disposable value. uri handlers and path handlers will both fire if they overlap.
+## Attaching endpoint filters to event subscriptions
+Pix can also attach a further kind of filter on websocket event subscriptions -- endpoint filters. An endpoint filter is a function that runs when a certain endpoint is specified by the event response. There are two kinds of endpoint filters. path filters end in '/', and run when the specified endpoint is any sub-endpoint of the path, and uri filters, which run when the endpoint is the same as the filter. You can attach endpoint filters through the subscription itself, via Pix with the subscription instance, or via Pix by event name (as there is only ever one active subscription per event at a time). endpoint handlers take the same signature as default event handlers. They must take in json formatted data and return None, or a disposable value. uri handlers and path handlers will both fire if they overlap. If an endpoint filter is fired, the subscription's default handler will not fire
 ```py
 async def custom_uri_handler_1(data):
   print('current-summoner uri got triggered. This is custom_uri_handler_1')

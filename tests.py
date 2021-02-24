@@ -3,7 +3,7 @@ from random import randint
 import asyncio
 
 async def main():
-    icon_num = randint(50, 78)
+    # icon_num = randint(50, 78)
     pix = await Pix.start()
     # # await pix.start()
     # resp = await pix.request('put', '/lol-summoner/v1/current-summoner/icon',
