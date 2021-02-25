@@ -29,19 +29,18 @@ async def un_default_event_handler(data):
 my_first_subscription = await pix.subscribe('OnJsonApiEvent', default_handler=un_default_event_handler)
 ```
 
-you can add subscriptions to an event by resubscribing to the same event
+You can add subscriptions to an event by resubscribing to the same event
 ```py
 new_subscription = await pix.subscribe('OnJsonApiEvent')
 ```
 
-if you want to attach an already made subscription to another event, you can pass it to the subscription handler:
+If you want to attach an already made subscription to another event, you can pass it to the subscription handler:
 ```py
 same_as_new_subscription = await pix.subscribe('OnJsonApiEvent_patcher_v1_status', subscription=new_subscription)
-print(same_subscription_as_new_subscription is new_subscription) #should print true
+print(same_subscription_as_new_subscription is new_subscription) #subscription is shallow copied so this should print true
 ```
-Note: this is a shallow copy, so changes made to a subscription in one place will affect it in another!!
 
-you can get the attached subscriptions to an event:
+You can get the attached subscriptions to an event:
 ```py
 all_subscriptions = pix.get_subscriptions('OnJsonApiEvent')
 ```
@@ -53,7 +52,7 @@ await pix.unsubscribe('OnJsonApiEvent') #This removes new_subscription, as well 
 ```
 
 ## Attaching endpoint filters to event subscriptions
-Pix's subscriptions contain two further kinds of filters on websocket event subscriptions -- uri filters and path filters. These are collectively known as endpoint filters. An endpoint filter is a function that runs when a certain endpoint is specified by the event response. A subscription can have multiple endpoint handlers attached to it. Path filters end in '/', and run when the specified endpoint is any sub-endpoint of the path. Uri filters run when the endpoint is the same as the filter's uri. You can attach endpoint filters through the subscription itself, or via Pix with the subscription instance. endpoint handlers take the same signature as event `default_handler`s. They must take in json formatted data and return None, or a disposable value. uri handlers and path handlers will both fire if they overlap. If an endpoint filter is fired, the subscription's `default_handler` will not fire. attaching two endpoint handlers with the same path will overwrite the old endpoint handler.
+Pix's subscriptions contain two further kinds of filters on websocket events -- uri filters and path filters. These are collectively known as endpoint filters. An endpoint filter is a function that runs when a certain endpoint is specified by the event response. A subscription can have multiple endpoint handlers attached to it. Path filters end in '/', and run when the specified endpoint is any sub-endpoint of the path. Uri filters run when the endpoint is the same as the filter's uri. You can attach endpoint filters through the subscription itself, or via Pix with the subscription instance. Endpoint handlers take the same signature as `default_handler`. They must take in json formatted data and return None, or a disposable value. Uri handlers and path handlers will both fire if they overlap. If an endpoint filter is fired, the subscription's `default_handler` will not fire. Attaching two endpoint handlers to the same endpoint will overwrite the pre-existing endpoint handler.
 
 ```py
 async def custom_uri_handler(data):
@@ -77,7 +76,7 @@ my_first_subscription.unfilter_endpoint('/lol-summoner/v1/current-summoner')
 ```
 
 ## Closing pix
-closing pix attempts to close the http and ws connections, gather outstanding subscription tasks, and gracefully exit.
+Closing pix attempts to close the http and ws connections, gather outstanding subscription tasks, and gracefully exit.
 ```py
 await pix.close()
 ```
