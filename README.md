@@ -46,7 +46,8 @@ async def un_default_handler(data):
   print("user defined default event handler")
   print(json.dumps(data, indent=4, sort_keys=True))
 
-my_first_subscription = await wllp.subscribe('OnJsonApiEvent', default_handler=un_default_handler)
+my_first_subscription = await wllp.subscribe('OnJsonApiEvent',
+                                             default_handler=un_default_handler)
 ```
 
 You can add subscriptions to an event by resubscribing to the same event
@@ -56,8 +57,9 @@ new_subscription = await wllp.subscribe('OnJsonApiEvent')
 
 If you want to attach an already made subscription to another event, you can pass it to the subscription handler:
 ```py
-same_as_new_subscription = await wllp.subscribe('OnJsonApiEvent_patcher_v1_status', subscription=new_subscription)
-print(same_subscription_as_new_subscription is new_subscription) #subscription is shallow copied so this should print true
+same_as_new_subscription = await wllp.subscribe('OnJsonApiEvent_patcher_v1_status',
+                                                subscription=new_subscription)
+print(same_subscription_as_new_subscription is new_subscription) #True, subscription is shallow copied
 ```
 
 You can get the attached subscriptions to an event:
@@ -68,7 +70,8 @@ all_subscriptions = wllp.get_subscriptions('OnJsonApiEvent')
 Willump can also unsubscribe from events to stop listening for them entirely, or can remove a subscription from an event:
 ```py
 await wllp.unsubscribe('OnJsonApiEvent', my_first_subscription) #new_subscription is still active
-await wllp.unsubscribe('OnJsonApiEvent') #This removes new_subscription, as well as any other subscriptions on 'OnJsonApiEvent'
+await wllp.unsubscribe('OnJsonApiEvent')#This removes new_subscription,
+                                        #as well as any other subscriptions on 'OnJsonApiEvent'
 ```
 
 ## Attaching endpoint filters to event subscriptions
