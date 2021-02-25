@@ -36,7 +36,7 @@ new_subscription = await pix.subscribe('OnJsonApiEvent')
 
 if you want to attach an already made subscription to another event, you can pass it to the subscription handler:
 ```py
-same_subscription_as_new_subscription = await pix.subscribe('OnJsonApiEvent_patcher_v1_status', subscription=new_subscription)
+same_as_new_subscription = await pix.subscribe('OnJsonApiEvent_patcher_v1_status', subscription=new_subscription)
 print(same_subscription_as_new_subscription is new_subscription) #should print true
 ```
 Note: this is a shallow copy, so changes made to a subscription in one place will affect it in another!!
