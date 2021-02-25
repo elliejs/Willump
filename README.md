@@ -59,7 +59,8 @@ If you want to attach an already made subscription to another event, you can pas
 ```py
 same_as_new_subscription = await wllp.subscribe('OnJsonApiEvent_patcher_v1_status',
                                                 subscription=new_subscription)
-print(same_subscription_as_new_subscription is new_subscription) #True, subscription is shallow copied
+print(same_subscription_as_new_subscription is new_subscription)
+#True, subscription is shallow copied
 ```
 
 You can get the attached subscriptions to an event:
