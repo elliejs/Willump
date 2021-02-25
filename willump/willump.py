@@ -4,9 +4,6 @@ import json
 from collections import defaultdict
 import logging
 
-from subscription import *
-from proc_utils import *
-
 class Willump:
     _headers = {
         'Content-Type': 'application/json',
