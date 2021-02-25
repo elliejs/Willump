@@ -20,7 +20,7 @@ class EventSubscription:
         if default_behavior:
             self._default_behavior = default_behavior
 
-    def filter_endpoint(self, endpoint, handler):
+    def filter_endpoint(self, endpoint, handler=_default_behavior):
         if endpoint.endswith('/'):
             self._registered_paths[endpoint] = handler
         else:
