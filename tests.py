@@ -19,11 +19,18 @@ async def main():
     #     print(resp)
     #
 
-    await pix.subscribe("OnJsonApiEvent", un_default_event_handler)
-    await asyncio.sleep(10)
-    await pix.unsubscribe("OnJsonApiEvent")
-    print('unsubbed')
-    await asyncio.sleep(10)
+    sub = await pix.subscribe("OnJsonApiEvent", default_handler=un_default_event_handler)
+    sub.filter_endpoint('/endpoiint')
+    sub2 = await pix.subscribe("OnJsonApiEvent_patcher_v1_status", subscription=sub)
+    sub2.filter_endpoint('/endpoiiiiiint')
+
+    # print(pix.ws_subscriptions)
+
+    for k, s in pix.ws_subscriptions.items():
+        print(k)
+        for _s in s:
+            print(_s._registered_uris)
+
     await pix.close()
 
 if __name__ == '__main__':
