@@ -1,10 +1,11 @@
 import aiohttp
 import asyncio
 import json
+from collections import defaultdict
+import logging
+
 from subscription import *
 from proc_utils import *
-
-import logging
 
 class Pix:
     _headers = {
@@ -45,7 +46,7 @@ class Pix:
 
         self.ws_session = aiohttp.ClientSession(auth=aiohttp.BasicAuth('riot', self._auth_key), headers=self._headers)
         self.ws_client = await self.ws_session.ws_connect(f'wss://127.0.0.1:{self._port}', ssl=False)
-        self.ws_subscriptions = {}
+        self.ws_subscriptions = defaultdict(list)
         self.subscription_tasks = []
         self.ws_loop_task = asyncio.create_task(self.begin_ws_loop())
         logging.info("began LCUx websocket loop")
@@ -61,8 +62,9 @@ class Pix:
                 else:
                     data = json.loads(msg.data)
 
-                    subscription = self.ws_subscriptions.get(data[1]) #If this raises KeyError, it oughta.
-                    self.subscription_tasks += subscription.tasks(data[2])
+                    subscriptions = self.ws_subscriptions[data[1]]
+                    for subscription in subscriptions:
+                        self.subscription_tasks += subscription.tasks(data[2])
 
                     if self.subscription_tasks:
                         done, pending = await asyncio.wait(self.subscription_tasks, timeout=0)
@@ -84,19 +86,23 @@ class Pix:
 
         return await self.https_session.request(method, f'https://127.0.0.1:{self._port}{endpoint}', ssl=False, **kwargs)
 
-    async def subscribe(self, event, default_behavior=None):
-        subscription = EventSubscription(default_behavior)
-        self.ws_subscriptions[event] = subscription
-        await self.ws_client.send_json([Event_Code.SUBSCRIBE.value, event])
+    async def subscribe(self, event, default_behavior=None, subscription=None):
+        if not subscription:
+            subscription = EventSubscription(default_behavior)
+
+        if not self.ws_subscriptions[event]:
+            await self.ws_client.send_json([Event_Code.SUBSCRIBE.value, event])
+
+        self.ws_subscriptions[event].append(subscription)
         return subscription
 
-    async def use_subscription(self, event, subscription):
-        self.ws_subscriptions[event] = subscription
-        await self.ws_client.send_json([Event_Code.SUBSCRIBE.value, event])
-
     def subscription_filter_endpoint(self, event_or_subscription, endpoint, behavior):
-        subscription = self.ws_subscriptions.get(event_or_subscription, event_or_subscription)
-        subscription.filter_endpoint(endpoint, behavior)
+        if isinstance(event_or_subscription, EventSubscription):
+            event_or_subscription.filter_endpoint(endpoint, behavior)
+        else:
+            subscriptions = self.ws_subscriptions[event_or_subscription]
+            for subscription in subscriptions:
+                subscription.filter_endpoint(endpoint, behavior)
 
     def subscription_unfilter_endpoint(self, event_or_subscription, endpoint):
         subscription = self.ws_subscriptions.get(event_or_subscription, event_or_subscription)
@@ -105,9 +111,14 @@ class Pix:
     def event_from_endpoint(self, endpoint):
         pass #TODO
 
-    async def unsubscribe(self, event):
-        await self.ws_client.send_json([Event_Code.UNSUBSCRIBE.value, event])
-        del self.ws_subscriptions[event]
+    async def unsubscribe(self, event, subscription=None):
+        if not subscription:
+            await self.ws_client.send_json([Event_Code.UNSUBSCRIBE.value, event])
+            del self.ws_subscriptions[event]
+        else:
+            self.ws_subscriptions[event].remove(subscription)
+            if not self.ws_subscriptions:
+                await self.ws_client.send_json([Event_Code.UNSUBSCRIBE.value, event])
 
     async def close(self):
         await self.https_session.close()
