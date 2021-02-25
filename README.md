@@ -1,6 +1,13 @@
 # Willump
 Willump is a Python3 helper for the League of Legends LCU API. Willump is asynchronous and can communicate on both HTTPS and WSS channels.
 
+## Installing Willump
+Willump can be installed through pip
+```
+pip install willump
+```
+Or `pip3` if using python3 pip
+
 ## Starting Willump
 Starting Willump is as easy as:
 ```py
