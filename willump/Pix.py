@@ -7,13 +7,13 @@ import logging
 from subscription import *
 from proc_utils import *
 
-class Pix:
+class Willump:
     _headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json'}
 
     async def start():
-        self = Pix()
+        self = Willump()
         self.process = None
         while not self.process:
             self.process = find_LCU_process()
