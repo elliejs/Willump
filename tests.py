@@ -1,6 +1,11 @@
 from Pix import Pix
 from random import randint
 import asyncio
+import json
+
+async def un_default_event_handler(data):
+  print("user defined default event handler")
+  print(json.dumps(data, indent=4, sort_keys=True))
 
 async def main():
     # icon_num = randint(50, 78)
@@ -14,9 +19,11 @@ async def main():
     #     print(resp)
     #
 
-    await pix.subscribe("OnJsonApiEvent")
+    await pix.subscribe("OnJsonApiEvent", un_default_event_handler)
     await asyncio.sleep(10)
-    # await pix.unsubscribe("OnJsonApiEvent")
+    await pix.unsubscribe("OnJsonApiEvent")
+    print('unsubbed')
+    await asyncio.sleep(10)
     await pix.close()
 
 if __name__ == '__main__':
