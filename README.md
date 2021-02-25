@@ -42,11 +42,11 @@ print(await response.json())
 ## Subscribing to websocket events
 Willump's websocket can subscribe to LCU events. Willump can attach a user defined `default_handler` to an event subscription which will be fired any time Willump receives a websocket message pertaining to the event and the message is not otherwise handled. `default_handler` is a function which accepts json formatted data as its sole argument and returns None, or a disposable value.
 ```py
-async def un_default_event_handler(data):
+async def un_default_handler(data):
   print("user defined default event handler")
   print(json.dumps(data, indent=4, sort_keys=True))
 
-my_first_subscription = await wllp.subscribe('OnJsonApiEvent', default_handler=un_default_event_handler)
+my_first_subscription = await wllp.subscribe('OnJsonApiEvent', default_handler=un_default_handler)
 ```
 
 You can add subscriptions to an event by resubscribing to the same event
