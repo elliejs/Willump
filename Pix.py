@@ -86,27 +86,27 @@ class Pix:
 
         return await self.https_session.request(method, f'https://127.0.0.1:{self._port}{endpoint}', ssl=False, **kwargs)
 
-    async def subscribe(self, event, default_behavior=None, subscription=None):
-        if not subscription:
-            subscription = EventSubscription(default_behavior)
+    async def subscribe(self, event, default_handler=None, subscription=None):
+        if default_handler and subscription:
+            logging.warn("passed in pre-existing subscription and a default handler for a new subscription. default_handler will be ignored in favour of the existing subscription")
 
         if not self.ws_subscriptions[event]:
             await self.ws_client.send_json([Event_Code.SUBSCRIBE.value, event])
 
+        if not subscription:
+            subscription = EventSubscription(default_handler)
+
         self.ws_subscriptions[event].append(subscription)
         return subscription
 
-    def subscription_filter_endpoint(self, event_or_subscription, endpoint, behavior):
-        if isinstance(event_or_subscription, EventSubscription):
-            event_or_subscription.filter_endpoint(endpoint, behavior)
-        else:
-            subscriptions = self.ws_subscriptions[event_or_subscription]
-            for subscription in subscriptions:
-                subscription.filter_endpoint(endpoint, behavior)
+    def get_subscriptions(self, event):
+        return self.ws_subscriptions[event]
 
-    def subscription_unfilter_endpoint(self, event_or_subscription, endpoint):
-        subscription = self.ws_subscriptions.get(event_or_subscription, event_or_subscription)
-        subscription.unfilter_endpoint(endpoint, behavior)
+    def subscription_filter_endpoint(self, subscription, endpoint, handler):
+        subscription.filter_endpoint(endpoint, handler)
+
+    def subscription_unfilter_endpoint(self, subscription, endpoint):
+        subscription.unfilter_endpoint(endpoint)
 
     def event_from_endpoint(self, endpoint):
         pass #TODO
