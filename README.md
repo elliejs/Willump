@@ -1,3 +1,11 @@
+<p>
+<a href="">
+        <img src="https://img.shields.io/pypi/v/willump?style=for-the-badge" alt="PyPi">
+    </a>
+    <a href="">
+        <img src="https://img.shields.io/github/license/sousa-andre/lcu-driver?style=for-the-badge" alt="license">
+    </a>
+</p>
 # Willump
 Willump is a Python3 helper for the League of Legends LCU API. Willump is asynchronous and can communicate on both HTTPS and WSS channels.
 
