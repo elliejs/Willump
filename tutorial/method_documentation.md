@@ -5,7 +5,7 @@
 - `get_subscriptions(self, event: str) -> list(EventSubscription)`
 - `subscription_filter_endpoint(self, subscription: EventSubscription, endpoint: str, handler: _(data: json) -> None)`
 - `subscription_unfilter_endpoint(self, subscription: EventSubscription, endpoint: str)`
-- `async unsubscribe(self, event: str, subscription=None) -> None`
+- `async unsubscribe(self, event: str, subscription=None: EventSubscription) -> None`
 - `async close(self) -> None`
 
 
