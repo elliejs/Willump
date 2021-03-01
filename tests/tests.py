@@ -9,9 +9,9 @@ async def un_default_event_handler(data):
 
 async def main():
     # icon_num = randint(50, 78)
-    willump = await Willump.start()
+    wllp = await Willump.start()
     # # await willump.start()
-    # resp = await willump.request('put', '/lol-summoner/v1/current-summoner/icon',
+    # resp = await wllp.request('put', '/lol-summoner/v1/current-summoner/icon',
     #                         data={"profileIconId": icon_num})
     # if resp.status == 201:
     #     print('success')
@@ -19,19 +19,19 @@ async def main():
     #     print(resp)
     #
 
-    sub = await willump.subscribe("OnJsonApiEvent", default_handler=un_default_event_handler)
+    sub = await wllp.subscribe("OnJsonApiEvent", default_handler=un_default_event_handler)
     sub.filter_endpoint('/endpoiint')
-    sub2 = await willump.subscribe("OnJsonApiEvent_patcher_v1_status", subscription=sub)
+    sub2 = await wllp.subscribe("OnJsonApiEvent_patcher_v1_status", subscription=sub)
     sub2.filter_endpoint('/endpoiiiiiint')
 
     # print(willump.ws_subscriptions)
 
-    for k, s in willump.ws_subscriptions.items():
+    for k, s in wllp.ws_subscriptions.items():
         print(k)
         for _s in s:
             print(_s._registered_uris)
 
-    await willump.close()
+    await wllp.close()
 
 if __name__ == '__main__':
     asyncio.run(main())
