@@ -5,10 +5,13 @@
 - `get_subscriptions(self, event: str) -> list(EventSubscription)`
 - `subscription_filter_endpoint(self, subscription: EventSubscription, endpoint: str, handler: _(data: json) -> None)`
 - `subscription_unfilter_endpoint(self, subscription: EventSubscription, endpoint: str)`
-- `def unsubscribe(self, event, subscription=None)`
+- `async unsubscribe(self, event: str, subscription=None) -> None`
+- `async close(self) -> None`
 
 
 # EventSubscription Methods
+- `filter_endpoint(self, endpoint: str, handler=_default_behavior: _(data: json) -> None) -> None`
+- `unfilter_endpoint(self, endpoint: str) -> None`
 
 # EventCode Enum
 ```py
