@@ -96,6 +96,3 @@ if __name__ == '__main__':
   #sane OS's
   asyncio.run(main()) #yep just run it. ez pz
 ```
-
-## Connecting async to Willump
-Willump dispatches websocket subscription events to the main event loop, keeping track of them but not blocking the websocket loop. In this way there's no blocked downtime receiving websocket events from the LCU server, each handler gets dispatched as the event comes in.
