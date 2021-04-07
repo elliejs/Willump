@@ -18,7 +18,7 @@
 #       Events are names for groups of endpoints.
 #       when an endpoint in an event changes, you get sent the new data for that endpoint.
 #
-# Q: How do I use events
+# Q: How do I use events?
 # A: Subscribe to an event to begin receiving its messages. The default_handler argument
 #    runs every time a message is received and not otherwise handled. You don't need to
 #    supply a default_handler. If you don't the automatic behavior is to log it as info.
