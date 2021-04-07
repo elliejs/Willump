@@ -62,9 +62,8 @@ async def main():
 		await asyncio.sleep(10)
 
 if __name__ == '__main__':
-	#see willump complain
-	logging.basicConfig(level=logging.NOTSET)
-	# asyncio.run(main())
+	# uncomment this line if you want to see willump complain (debug log)
+	# logging.basicConfig(level=logging.NOTSET)
 	loop = asyncio.get_event_loop()
 	try:
 		loop.run_until_complete(main())
