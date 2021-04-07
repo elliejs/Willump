@@ -51,7 +51,6 @@ async def printing_listener(data):
 	print(json.dumps(data, indent=4, sort_keys=True))
 
 
-# wllp = 0;
 async def main():
 	global wllp
 	wllp = await willump.start()
