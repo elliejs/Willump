@@ -3,7 +3,7 @@
         <img src="https://img.shields.io/pypi/v/willump?style=for-the-badge" alt="PyPi">
     </a>
     <a href="">
-        <img src="https://img.shields.io/github/license/sousa-andre/lcu-driver?style=for-the-badge" alt="license">
+        <img src="https://img.shields.io/github/license/elliejs/willump?style=for-the-badge" alt="license">
     </a>
 </p>
 
