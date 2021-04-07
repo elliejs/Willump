@@ -37,7 +37,6 @@ import asyncio
 from functools import partial
 
 import logging
-import signal
 
 #let's make a dummy default just to see what unfiltered messages do
 async def default_message_handler(data):
