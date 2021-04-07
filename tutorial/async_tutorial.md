@@ -1,7 +1,7 @@
 # Prerequisite Primer: Asyncio
 Aynchronous programming tries to solve problems with event update based systems that classic synchronous programming can't gracefully handle. One note to keep in mind that will be discused a little throughout this explanation is that **concurrency** is not **parallelism**. Asynchronous programming defines a lot of tasks that you want to have happen at efficient times instead of the classic in-order programming style of synchronous programming.
 
-**Async programming is concurrent programming**.
+**Async programming is concurrent programming, not parallel programming**.
 
 Async programming declares a main loop, vaguely hidden from the programmer, called the **event loop**. Many async tasks can be scheduled to be run on the event loop, but *only one task runs at a time*. If you want many tasks to actually run at the *exact same time*, you are looking for parallelism. Luckily, we don't have to actually achieve parallelism to pretend like our program is behaving in a parallel manner. The idea is that if we want to do something that takes a long time, like say reading the entirety of Moby Dick into memory, we should be allowed to do other things that don't rely on actually having that data ready until we need the data.
 
