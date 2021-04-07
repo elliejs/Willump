@@ -15,7 +15,7 @@
 #    When events are triggered, they send the new data to willump.
 #    Each update is of an endpoint underneath Event umbrella.
 #    TL;DR
-#		Events are names for groups of endpoints.
+#       Events are names for groups of endpoints.
 #       when an endpoint in an event changes, you get sent the new data for that endpoint.
 #
 # Q: How do I use events
