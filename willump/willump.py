@@ -51,7 +51,7 @@ class Willump:
         self.subscription_tasks = []
         self.ws_loop_task = asyncio.create_task(self.begin_ws_loop())
         logging.info("began LCUx websocket loop")
-        logging.info("Pix is fully connected")
+        logging.info("Willump is fully connected")
         return self
 
 
