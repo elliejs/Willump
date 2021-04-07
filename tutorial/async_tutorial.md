@@ -28,7 +28,9 @@ coroutine_obj = read_moby_dick()
 print(coroutine_obj)
 #no matter how long i sleep here or wait, 'ok' will never be printed
 ```
-`<coroutine object read_moby_dick at 0x7f26f0a7f940>`
+```
+<coroutine object read_moby_dick at 0x7f26f0a7f940>
+```
 This creates a coroutine object, or a bundle of code that will *at some point in the future* have the answer from `read_moby_dick`. But it hasn't run yet, and it won't until you `await` it.
 ```py
 result = await coroutine
@@ -94,6 +96,3 @@ if __name__ == '__main__':
   #sane OS's
   asyncio.run(main()) #yep just run it. ez pz
 ```
-
-## Connecting async to Willump
-Willump dispatches websocket subscription events to the main event loop, keeping track of them but not blocking the websocket loop. In this way there's no blocked downtime receiving websocket events from the LCU server, each handler gets dispatched as the event comes in.
