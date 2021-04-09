@@ -1,2 +1,2 @@
-from .willump import *
+from .willump import Willump
 start = Willump.start
