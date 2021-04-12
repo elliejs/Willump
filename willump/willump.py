@@ -18,7 +18,7 @@ class Willump:
         self.process = None
         while not self.process:
             self.process = find_LCU_process()
-            logging.debug("couldn't find LCUx process yet. Re-searching process list...")
+            logging.warn("couldn't find LCUx process yet. Re-searching process list...")
             await asyncio.sleep(0.5)
 
         logging.info("found LCUx process", self.process)
