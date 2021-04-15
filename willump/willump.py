@@ -3,6 +3,8 @@ import asyncio
 import json
 from collections import defaultdict
 import logging
+import ssl
+import socket
 
 from .subscription import Event_Code, EventSubscription
 from .proc_utils import parse_cmdline_args, find_LCU_process
@@ -15,13 +17,14 @@ class Willump:
     @staticmethod
     async def start():
         self = Willump()
+        self.nunu_on = False
         self.process = None
         while not self.process:
             self.process = find_LCU_process()
             logging.warn("couldn't find LCUx process yet. Re-searching process list...")
             await asyncio.sleep(0.5)
 
-        logging.info("found LCUx process", self.process)
+        logging.info("found LCUx process", str(self.process))
 
         process_args = parse_cmdline_args(self.process.cmdline())
 
@@ -36,9 +39,9 @@ class Willump:
             try:
                 resp = await self.request('get', '/riotclient/ux-state')
                 if resp.status == 200:
-                    logging.info("connected to LCUx server", resp.status)
+                    logging.info("connected to LCUx server", str(resp.status))
                 else:
-                    logging.warning("connected to LCUx https server, but got an invalid response for a known uri. Response status code:", resp.status)
+                    logging.warning("connected to LCUx https server, but got an invalid response for a known uri. Response status code:", str(resp.status))
                 break
             except aiohttp.client_exceptions.ClientConnectorError:
                 logging.warn("can't connect to LCUx server. Retrying...") #this might be too much log spam
@@ -52,6 +55,39 @@ class Willump:
         self.ws_loop_task = asyncio.create_task(self.begin_ws_loop())
         logging.info("began LCUx websocket loop")
         logging.info("Willump is fully connected")
+        return self
+
+    async def nunu(self, Allow_Origin, ssh_key_path, port=8989, host=None):
+        _nunu_headers = {'Access-Control-Allow-Origin': Allow_Origin}
+
+        def get_ip():
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            try:
+                s.connect(('10.255.255.255', 1))
+                IP = s.getsockname()[0]
+            except Exception:
+                IP = '127.0.0.1'
+            finally:
+                s.close()
+            return IP
+
+        async def router(req):
+            logging.info(str(req.method) + str(req.rel_url))
+            data = await req.json() if req.can_read_body else None
+
+            resp = await self.request(req.method, req.rel_url, data=data)
+            resp_json = await resp.json()
+            return aiohttp.web.json_response(resp_json, headers = _nunu_headers)
+
+        self.nunu_app = aiohttp.web.Application()
+        self.nunu_app.add_routes([aiohttp.web.route('*', '/{tail:.*}', router)])
+
+        ssl_context = ssl.create_default_context(purpose=ssl.Purpose.CLIENT_AUTH)
+        ssl_context.load_cert_chain(ssh_key_path)
+
+        self.nunu_task = asyncio.create_task(aiohttp.web._run_app(self.nunu_app, host=host or get_ip(), port=port, ssl_context=ssl_context))
+
+        self.nunu_on = True
         return self
 
 
@@ -109,8 +145,8 @@ class Willump:
     def subscription_unfilter_endpoint(self, subscription, endpoint):
         subscription.unfilter_endpoint(endpoint)
 
-    def event_from_endpoint(self, endpoint):
-        pass #TODO
+    # def event_from_endpoint(self, endpoint):
+    #     pass #TODO
 
     async def unsubscribe(self, event, subscription=None):
         if not subscription:
@@ -127,3 +163,10 @@ class Willump:
         await self.ws_session.close()
         await self.ws_loop_task
         await asyncio.gather(*self.subscription_tasks)
+        if self.nunu:
+            # srv.close()
+            # loop.run_until_complete(srv.wait_closed())
+            await self.nunu_app.shutdown()
+            #loop.run_until_complete(handler.finish_connections(60.0))
+            await self.nunu_app.cleanup()
+            await self.nunu_task
