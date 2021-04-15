@@ -40,7 +40,7 @@ import logging
 
 #let's make a dummy default just to see what unfiltered messages do
 async def default_message_handler(data):
-	print('I got data, and it was not otherwise processed')
+	print(data['eventType'] + ' ' + data['uri'])
 	#uncomment this if it's not too much data (it probably is)
 	#print(json.dumps(data, indent=4, sort_keys=True))
 
