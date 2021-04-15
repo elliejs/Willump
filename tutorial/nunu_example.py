@@ -1,6 +1,9 @@
 #for cutting edge github import
 from willump.willump import Willump
 
+#this works with willump>=1.2.0
+#import willump
+
 import asyncio
 
 async def main():
