@@ -14,7 +14,7 @@ async def main():
         await asyncio.sleep(100)
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.NOTSET)
+    # logging.basicConfig(level=logging.NOTSET)
     loop = asyncio.get_event_loop()
     try:
         loop.run_until_complete(main())
