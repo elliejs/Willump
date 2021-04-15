@@ -34,7 +34,6 @@
 import willump
 import json
 import asyncio
-from functools import partial
 
 import logging
 
