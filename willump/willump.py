@@ -15,9 +15,15 @@ class Willump:
         'Accept': 'application/json'}
 
     @staticmethod
-    async def start():
+    async def start(start_nunu=False, start_websocket=True, **kwargs):
         self = Willump()
-        self.nunu_on = False
+        self.nunu_alive = False
+        self.websocket_alive = False
+
+        nunu_loading = None
+        if start_nunu:
+            nunu_loading = asyncio.create_task(self.nunu(Allow_Origin = kwargs['Allow_Origin'], ssh_key_path = kwargs['ssh_key_path'], port=kwargs.get('port', None), host=kwargs.get('host', None)))
+
         self.process = None
         while not self.process:
             self.process = find_LCU_process()
@@ -28,8 +34,6 @@ class Willump:
 
         process_args = parse_cmdline_args(self.process.cmdline())
 
-        # self._lcu_pid = self.process.pid
-        # self._pid = int(process_args['app-pid'])
         self._port = int(process_args['app-port'])
         self._auth_key = process_args['remoting-auth-token']
 
@@ -48,17 +52,32 @@ class Willump:
                 await asyncio.sleep(0.5)
                 pass
 
+        if start_websocket:
+            await self.launch_websocket()
+
+        if nunu_loading:
+            await nunu_loading
+
+        logging.info("Willump is fully connected")
+        return self
+
+
+    async def launch_websocket(self):
         self.ws_session = aiohttp.ClientSession(auth=aiohttp.BasicAuth('riot', self._auth_key), headers=self._headers)
         self.ws_client = await self.ws_session.ws_connect(f'wss://127.0.0.1:{self._port}', ssl=False)
         self.ws_subscriptions = defaultdict(list)
         self.subscription_tasks = []
         self.ws_loop_task = asyncio.create_task(self.begin_ws_loop())
+        self.start_websocket = True
         logging.info("began LCUx websocket loop")
-        logging.info("Willump is fully connected")
-        return self
 
-    async def nunu(self, Allow_Origin, ssh_key_path, port=8989, host=None):
-        _nunu_headers = {'Access-Control-Allow-Origin': Allow_Origin}
+
+    async def nunu(self, Allow_Origin, ssh_key_path, port=None, host=None):
+        _nunu_headers = {
+            'Access-Control-Allow-Origin': Allow_Origin,
+            'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+        }
 
         def get_ip():
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -73,6 +92,9 @@ class Willump:
 
         async def router(req):
             logging.info(str(req.method) + str(req.rel_url))
+            if req.method == 'OPTIONS':
+                return aiohttp.web.Response(headers = _nunu_headers)
+
             data = await req.json() if req.can_read_body else None
 
             resp = await self.request(req.method, req.rel_url, data=data)
@@ -85,11 +107,10 @@ class Willump:
         ssl_context = ssl.create_default_context(purpose=ssl.Purpose.CLIENT_AUTH)
         ssl_context.load_cert_chain(ssh_key_path)
 
-        self.nunu_task = asyncio.create_task(aiohttp.web._run_app(self.nunu_app, host=host or get_ip(), port=port, ssl_context=ssl_context))
+        self.nunu_task = asyncio.create_task(aiohttp.web._run_app(self.nunu_app, host=host or get_ip(), port=port or 8989, ssl_context=ssl_context))
 
-        self.nunu_on = True
+        self.nunu_alive = True
         return self
-
 
     async def begin_ws_loop(self):
         async for msg in self.ws_client:
@@ -159,14 +180,20 @@ class Willump:
 
     async def close(self):
         await self.https_session.close()
+        if self.websocket_alive:
+            await self.close_websocket()
+        if self.nunu_alive:
+            await self.close_nunu()
+
+    async def close_websocket(self):
         await self.ws_client.close()
         await self.ws_session.close()
         await self.ws_loop_task
         await asyncio.gather(*self.subscription_tasks)
-        if self.nunu:
-            # srv.close()
-            # loop.run_until_complete(srv.wait_closed())
-            await self.nunu_app.shutdown()
-            #loop.run_until_complete(handler.finish_connections(60.0))
-            await self.nunu_app.cleanup()
-            await self.nunu_task
+        self.websocket_alive = False
+
+    async def close_nunu(self):
+        await self.nunu_app.shutdown()
+        await self.nunu_app.cleanup()
+        await self.nunu_task
+        self.nunu_alive = False
