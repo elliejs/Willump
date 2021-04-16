@@ -22,7 +22,7 @@ class Willump:
 
         nunu_loading = None
         if start_nunu:
-            nunu_loading = asyncio.create_task(self.nunu(Allow_Origin = kwargs['Allow_Origin'], ssh_key_path = kwargs['ssh_key_path'], port=kwargs.get('port', None), host=kwargs.get('host', None)))
+            nunu_loading = asyncio.create_task(self.start_nunu(Allow_Origin = kwargs['Allow_Origin'], ssl_key_path = kwargs['ssl_key_path'], port=kwargs.get('port', None), host=kwargs.get('host', None)))
 
         self.process = None
         while not self.process:
@@ -53,7 +53,7 @@ class Willump:
                 pass
 
         if start_websocket:
-            await self.launch_websocket()
+            await self.start_websocket()
 
         if nunu_loading:
             await nunu_loading
@@ -61,18 +61,41 @@ class Willump:
         logging.info("Willump is fully connected")
         return self
 
+    async def start_websocket(self):
+        async def begin_ws_loop(self):
+            async for msg in self.ws_client:
+                if msg.type == aiohttp.WSMsgType.TEXT:
+                    if not msg.data:
+                        logging.info('got websocket message containing no data, probably just server confirming subscription success')
+                    else:
+                        data = json.loads(msg.data)
 
-    async def launch_websocket(self):
+                        subscriptions = self.ws_subscriptions[data[1]]
+                        for subscription in subscriptions:
+                            self.subscription_tasks += subscription.tasks(data[2])
+
+                        if self.subscription_tasks:
+                            done, pending = await asyncio.wait(self.subscription_tasks, timeout=0)
+                            for task in done:
+                                _ = await task
+                                self.subscription_tasks.remove(task)
+
+                elif msg.type == aiohttp.WSMsgType.ERROR:
+                    logging.warning('received websocket message ERROR, ending listening loop')
+                    break
+                elif msg.type == aiohttp.WSMsgType.CLOSED:
+                    logging.info('received websocket message CLOSE, ending listening loop')
+                    break
+
         self.ws_session = aiohttp.ClientSession(auth=aiohttp.BasicAuth('riot', self._auth_key), headers=self._headers)
         self.ws_client = await self.ws_session.ws_connect(f'wss://127.0.0.1:{self._port}', ssl=False)
         self.ws_subscriptions = defaultdict(list)
         self.subscription_tasks = []
-        self.ws_loop_task = asyncio.create_task(self.begin_ws_loop())
+        self.ws_loop_task = asyncio.create_task(begin_ws_loop(self))
         self.start_websocket = True
         logging.info("began LCUx websocket loop")
 
-
-    async def nunu(self, Allow_Origin, ssh_key_path, port=None, host=None):
+    async def start_nunu(self, Allow_Origin, ssl_key_path, port=None, host=None):
         _nunu_headers = {
             'Access-Control-Allow-Origin': Allow_Origin,
             'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, OPTIONS',
@@ -105,37 +128,12 @@ class Willump:
         self.nunu_app.add_routes([aiohttp.web.route('*', '/{tail:.*}', router)])
 
         ssl_context = ssl.create_default_context(purpose=ssl.Purpose.CLIENT_AUTH)
-        ssl_context.load_cert_chain(ssh_key_path)
+        ssl_context.load_cert_chain(ssl_key_path)
 
         self.nunu_task = asyncio.create_task(aiohttp.web._run_app(self.nunu_app, host=host or get_ip(), port=port or 8989, ssl_context=ssl_context))
 
         self.nunu_alive = True
         return self
-
-    async def begin_ws_loop(self):
-        async for msg in self.ws_client:
-            if msg.type == aiohttp.WSMsgType.TEXT:
-                if not msg.data:
-                    logging.info('got websocket message containing no data, probably just server confirming subscription success')
-                else:
-                    data = json.loads(msg.data)
-
-                    subscriptions = self.ws_subscriptions[data[1]]
-                    for subscription in subscriptions:
-                        self.subscription_tasks += subscription.tasks(data[2])
-
-                    if self.subscription_tasks:
-                        done, pending = await asyncio.wait(self.subscription_tasks, timeout=0)
-                        for task in done:
-                            _ = await task
-                            self.subscription_tasks.remove(task)
-
-            elif msg.type == aiohttp.WSMsgType.ERROR:
-                logging.warning('received websocket message ERROR, ending listening loop')
-                break
-            elif msg.type == aiohttp.WSMsgType.CLOSED:
-                logging.info('received websocket message CLOSE, ending listening loop')
-                break
 
         #FIXME: make SSL work ya chump
     async def request(self, method, endpoint, **kwargs):
