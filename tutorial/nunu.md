@@ -6,7 +6,7 @@ Nunu is the companion component to Willump. It is a LAN server which runs on the
 Nunu is bundled with Willump. For information on installing Willump, refer to [here](github.com/elliejs/willump).
 
 ## Nunu Quickstart
-Once Nunu is installed and running (see below), you can test out demo code [here](https://zork.pw). Simply put in the host:port given to you by Nunu into the text box and hit "Click here for custom lobby demo", and you will be put into a custom lobby and the response from the put request will be pasted into the webpage where it says "Nunu Response appears here". The source code for this website is available [here](https://github.com/elliejs/Willump/tree/main/nunu)
+Once Nunu is installed and running (see below), you can test out demo code [here](https://zork.pw). Simply put in the host:port given to you by Nunu into the text box and hit "Click here for custom lobby demo", and you will be put into a custom lobby and the response from the put request will be pasted into the webpage where it says "Nunu Response appears here". The source code for this website is available [here](https://github.com/elliejs/Willump/tree/main/nunu). **Use either `'*'` or `'https://zork.pw'` for Allow_Origin.**
 
 ## Starting Nunu
 Nunu can be started at any time after Willump has been started and awaited.
