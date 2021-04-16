@@ -5,6 +5,8 @@ function dothing() {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     },
+    mode: 'cors',
+    crossDomain: true,
     body: JSON.stringify({
       "customGameLobby": {
         "configuration": {
