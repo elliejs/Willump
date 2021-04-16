@@ -1,4 +1,5 @@
 import aiohttp
+from aiohttp import web
 import asyncio
 import json
 from collections import defaultdict
@@ -116,21 +117,21 @@ class Willump:
         async def router(req):
             logging.info(str(req.method) + str(req.rel_url))
             if req.method == 'OPTIONS':
-                return aiohttp.web.Response(headers = _nunu_headers)
+                return web.Response(headers = _nunu_headers)
 
             data = await req.json() if req.can_read_body else None
 
             resp = await self.request(req.method, req.rel_url, data=data)
             resp_json = await resp.json()
-            return aiohttp.web.json_response(resp_json, headers = _nunu_headers)
+            return web.json_response(resp_json, headers = _nunu_headers)
 
-        self.nunu_app = aiohttp.web.Application()
-        self.nunu_app.add_routes([aiohttp.web.route('*', '/{tail:.*}', router)])
+        self.nunu_app = web.Application()
+        self.nunu_app.add_routes([web.route('*', '/{tail:.*}', router)])
 
         ssl_context = ssl.create_default_context(purpose=ssl.Purpose.CLIENT_AUTH)
         ssl_context.load_cert_chain(ssl_key_path)
 
-        self.nunu_task = asyncio.create_task(aiohttp.web._run_app(self.nunu_app, host=host or get_ip(), port=port or 8989, ssl_context=ssl_context))
+        self.nunu_task = asyncio.create_task(web._run_app(self.nunu_app, host=host or get_ip(), port=port or 8989, ssl_context=ssl_context))
 
         self.nunu_alive = True
         return self
