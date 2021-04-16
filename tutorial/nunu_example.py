@@ -5,7 +5,7 @@ import asyncio
 
 async def main():
     global wllp
-    wllp = await (await Willump.start()).nunu(Allow_Origin='https://your.origin.here.com', ssh_key_path='/path/to/server.pem')
+    wllp = await willump.start(start_nunu=True, Allow_Origin='https://your.origin.here.com', ssl_key_path='/path/to/server.pem')
 
     while True:
         await asyncio.sleep(100)
