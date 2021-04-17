@@ -35,7 +35,7 @@ Allow-Origin is a dangerous tool, and understanding CORS is an important step to
 1) **LAN**:
   LAN stands for Local Access Network. For most users, it is the collection of computers all connected to the same router you are. If you're at home this is usually a safe space. If you're at a public cafe or airport, this is much less true, as there are many strangers connected to the same wifi network.
 2) **WAN**:
-  WAN stands for Wide Access Network. This is ~*The Internet*~. If you set up a server on your external IP address, then anyone with the magic number can access it. **UNLESS YOU ARE FULLY AWARE OF THE RISKS OF EXPOSING YOUR SERVER TO THE WORLD DO NOT DO THIS**
+  WAN stands for Wide Access Network. This is \~*The Internet*\~. If you set up a server on your external IP address, then anyone with the magic number can access it. **UNLESS YOU ARE FULLY AWARE OF THE RISKS OF EXPOSING YOUR SERVER TO THE WORLD DO NOT DO THIS**
 3) **CORS & XSS**:
   CORS stands for Cross Origin Resource Sharing. XSS stands for Cross Site Scripting. These topics are big, and you should probably go look them up if you don't know what they are. I'm sure some Medium writer has made a fine article on the subject.
 
