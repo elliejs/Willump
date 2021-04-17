@@ -10,7 +10,7 @@ setup(
 
     version='1.2.3',
 
-    description='AWillump is a Python3 helper for the League of Legends LCU API',
+    description='Willump is a Python3 helper for the League of Legends LCU API',
 
     long_description=long_description,
     long_description_content_type='text/markdown',
