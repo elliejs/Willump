@@ -7,7 +7,7 @@
     </a>
 </p>
 
-# New in Willump 1.2.3
+# New in Willump 1.2.6
 ## Nunu: The server that translates Yeti to English
 Read the [Nunu](https://github.com/elliejs/Willump/blob/main/tutorial/nunu.md) readme and get started with your League of Legends webapp today!
 

@@ -8,7 +8,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 setup(
     name='willump',
 
-    version='1.2.3',
+    version='1.2.6',
 
     description='Willump is a Python3 helper for the League of Legends LCU API',
 
@@ -39,7 +39,7 @@ setup(
 
     # When your source code is in a subdirectory under the project root, e.g.
     # `src/`, it is necessary to specify the `package_dir` argument.
-    package_dir={'': 'willump'},  # Optional
+    # package_dir={'': 'willump'},  # Optional
 
     # You can just specify package directories manually here if your project is
     # simple. Or you can use find_packages().
@@ -50,7 +50,7 @@ setup(
     #
     #   py_modules=["my_module"],
     #
-    packages=find_packages(where='willump'),  # Required
+    packages=find_packages(),  # Required
 
     # Specify which Python versions you support. In contrast to the
     # 'Programming Language' classifiers above, 'pip install' will check this
