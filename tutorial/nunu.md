@@ -24,6 +24,7 @@ wllp = willump.start(start_nunu=True, Allow_Origin='YOUR_ORIGIN', ssl_key_path='
 Nunu has the following methods:
 - `async start_nunu(self, Allow_Origin: str, ssl_key_path: str, port=None: int, host=None: ip_addr): Willump`
 - `async close_nunu(self): None`
+
 These are also always available on the Willump [methods](https://github.com/elliejs/Willump/blob/main/tutorial/method_documentation.md) page.
 
 ### Allow_Origin
