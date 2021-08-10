@@ -5,6 +5,9 @@
     <a href="">
         <img src="https://img.shields.io/github/license/elliejs/willump?style=for-the-badge" alt="license">
     </a>
+    <a href="">
+        <img src="https://img.shields.io/pypi/dm/willump?style=for-the-badge" alt="downloads/month">
+    </a>
 </p>
 
 # New in Willump 1.2.6
