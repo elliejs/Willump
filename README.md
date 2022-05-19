@@ -17,7 +17,10 @@ Read the [Nunu](https://github.com/elliejs/Willump/blob/main/tutorial/nunu.md) r
 # Willump
 Willump is a Python3 helper for the League of Legends LCU API. Willump is asynchronous and can communicate on both HTTPS and WSS channels.
 
-## For help with Willump take a look at the [documentation folder](https://github.com/elliejs/Willump/tree/main/tutorial)
+## In [documentation folder](https://github.com/elliejs/Willump/tree/main/tutorial) you will find some good docs which will help you using willump such as 
+* [Willump methods](https://github.com/elliejs/Willump/blob/main/tutorial/method_documentation.md)
+* [willump listener](https://github.com/elliejs/Willump/blob/main/tutorial/lcu_listener.py)
+* 
 
 Willump would not exist without [lcu-driver](https://github.com/sousa-andre/lcu-driver), another driver for the League of Legends LCU API. Huge thanks to [Andre Sousa](https://github.com/sousa-andre) for creating the starting point for Willump.
 
