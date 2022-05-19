@@ -17,14 +17,13 @@ Read the [Nunu](https://github.com/elliejs/Willump/blob/main/tutorial/nunu.md) r
 # Willump
 Willump is a Python3 helper for the League of Legends LCU API. Willump is asynchronous and can communicate on both HTTPS and WSS channels.
 
-## In [documentation folder](https://github.com/elliejs/Willump/tree/main/tutorial) you will find some good docs which will help you using willump such as 
-* [Willump methods](https://github.com/elliejs/Willump/blob/main/tutorial/method_documentation.md)
-* [willump listener](https://github.com/elliejs/Willump/blob/main/tutorial/lcu_listener.py)
-* 
+## In [documentation folder](https://github.com/elliejs/Willump/tree/main/tutorial) you will find tutorials on how to use Willump methods and listener in addition to how to make async python calls. Even a quick example of nunu *The web proxy*
 
 Willump would not exist without [lcu-driver](https://github.com/sousa-andre/lcu-driver), another driver for the League of Legends LCU API. Huge thanks to [Andre Sousa](https://github.com/sousa-andre) for creating the starting point for Willump.
 
 Documentation for the LCU can be found on the [Hextech Docs](https://hextechdocs.dev/getting-started-with-the-lcu-api/), and a schema of the LCU can be found [here](http://www.mingweisamuel.com/lcu-schema/tool/).
+
+Another documentation but for [how to deal with runes in lcu](https://hextechdocs.dev/how-to-set-runes-using-lcu/)
 
 If you have questions about Willump or the Riot API, find me or ask a question at the [Riot Games Third Party Developer Community](https://discord.gg/riotgamesdevrel) Discord.
 
