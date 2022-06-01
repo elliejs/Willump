@@ -63,6 +63,17 @@ async def add_bots_team2():
         await wllp.request("POST", "/lol-lobby/v1/lobby/custom/bots", data=bot)
 
 
+#---------------------------------------------
+# Websocket Listening
+#---------------------------------------------
+
+async def subscription_lobby_created():
+    event_lobby_created = await wllp.subscribe('OnJsonApiEvent')
+    wllp.subscription_filter_endpoint(event_lobby_created, '/lol-lobby/v2/lobby', handler=lobby_created)
+
+async def lobby_created(event):
+    print(f"The summoner {event['data']['localMember']['summonerName']} created a lobby.")
+
 # ---------------------------------------------
 # main
 # ---------------------------------------------
@@ -71,13 +82,15 @@ async def main():
     global wllp
     wllp = await willump.start()
     await get_summoner_data()
+    await subscription_lobby_created()
     await create_lobby()
     await add_bots_team1()
-    await add_bots_team2()
     await wllp.close()
-
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
-    loop.close()
+    try:
+      loop.run_until_complete(main())
+    except KeyboardInterrupt:
+      loop.run_until_complete(wllp.close())
+      print()
