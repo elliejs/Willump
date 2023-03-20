@@ -8,7 +8,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 setup(
     name='willump',
 
-    version='1.2.6',
+    version='1.3.0',
 
     description='Willump is a Python3 helper for the League of Legends LCU API',
 
@@ -17,7 +17,7 @@ setup(
 
     url='https://github.com/elliejs/Willump',
 
-    author='Eleanor J S',
+    author='elliejs',
 
     author_email='ejsilver@wpi.edu',
 
