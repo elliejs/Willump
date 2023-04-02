@@ -13,7 +13,7 @@
 - `async close_websocket(self): None`
 
 ## Willump Methods for Nunu Usage
-- `async start_nunu(self, Allow_Origin: str, ssl_key_path: str, port=None: int, host=None: ip_addr): Willump`
+- `start_nunu(self, Allow_Origin='*', sslCert=None: str, sslKey=None: str, forceNew=False: bool, port=8989: int, host=None: ip_addr): Willump`
 - `async close_nunu(self): None`
 
 

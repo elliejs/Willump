@@ -2,19 +2,19 @@
 import willump
 
 import asyncio
+import logging
 
 async def main():
     global wllp
-    wllp = await willump.start(start_nunu=True, Allow_Origin='https://your.origin.here.com', ssl_key_path='/path/to/server.pem')
+    wllp = await willump.start(with_nunu=True, Allow_Origin="https://eleanor.sh")
 
     while True:
         await asyncio.sleep(100)
 
 if __name__ == '__main__':
-    # logging.basicConfig(level=logging.NOTSET)
-    loop = asyncio.get_event_loop()
+    # uncomment this line if you want to see nunu complain (debug log)
+    # logging.getLogger().setLevel(level=logging.DEBUG)
     try:
-        loop.run_until_complete(main())
+        asyncio.run(main())
     except KeyboardInterrupt:
-       loop.run_until_complete(wllp.close())
-       print()
+       asyncio.run(wllp.close())

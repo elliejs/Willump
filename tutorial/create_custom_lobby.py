@@ -88,9 +88,10 @@ async def main():
     await wllp.close()
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
+    # uncomment this line if you want to see willump complain (debug log)
+	# logging.getLogger().setLevel(level=logging.DEBUG)
     try:
-      loop.run_until_complete(main())
+      asyncio.run(main())
     except KeyboardInterrupt:
-      loop.run_until_complete(wllp.close())
+      asyncio.run(wllp.close())
       print()

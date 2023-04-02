@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 class LiveEvents:
     _port = 34243

@@ -47,13 +47,13 @@ class Willump:
             except aiohttp.client_exceptions.ClientConnectorError:
                 logging.warn("can't connect to LCUx server. Retrying...") #this might be too much log spam
                 await asyncio.sleep(0.5)
-                pass
 
         if with_websocket:
             await self.start_websocket()
 
         if with_nunu:
-            self.start_nunu(Allow_Origin = kwargs['Allow_Origin'], ssl_key_path = kwargs['ssl_key_path'], port=kwargs.get('port', None), host=kwargs.get('host', None))
+            #is this Allow_Origin ethical......
+            self.start_nunu(Allow_Origin = kwargs.get('Allow_Origin', '*'), sslCert = kwargs.get('sslCert', None), sslKey = kwargs.get('sslKey', None), forceNew = kwargs.get('forceNew', False),  port=kwargs.get('port', 8989), host=kwargs.get('host', None))
 
         logging.info("Willump is fully connected")
         return self
@@ -107,12 +107,12 @@ class Willump:
         self.websocket_alive = True
         logging.info("began LCUx websocket loop")
 
-    def start_nunu(self, Allow_Origin, ssl_key_path, port=None, host=None):
+    def start_nunu(self, Allow_Origin='*', sslCert=None, sslKey=None, forceNew=False, port=8989, host=None):
         if self.nunu_alive:
             logging.warn('nunu is already started. dropping out. Nunu will continue running')
             return self
 
-        self.nunu = Nunu(self, Allow_Origin, ssl_key_path, port, host)
+        self.nunu = Nunu(self, Allow_Origin, sslCert, sslKey, forceNew, port, host)
         self.nunu_alive = True
 
     async def start_live_events(self, port=None, default_behavior=None, retry_policy=False):

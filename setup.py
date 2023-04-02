@@ -8,7 +8,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 setup(
     name='willump',
 
-    version='1.3.0',
+    version='1.4.0',
 
     description='Willump is a Python3 helper for the League of Legends LCU API',
 
@@ -64,7 +64,7 @@ setup(
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['psutil', 'aiohttp'],  # Optional
+    install_requires=['psutil', 'aiohttp', 'cryptography'],  # Optional
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"

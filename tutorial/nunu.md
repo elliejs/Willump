@@ -6,23 +6,23 @@ Nunu is the companion component to Willump. It is a LAN server which runs on the
 Nunu is bundled with Willump. For information on installing Willump, refer to [here](github.com/elliejs/willump).
 
 ## Nunu Quickstart
-Once Nunu is installed and running (see below), you can test out demo code [here](https://zork.pw). Simply put in the host:port given to you by Nunu into the text box and hit "Click here for custom lobby demo", and you will be put into a custom lobby and the response from the put request will be pasted into the webpage where it says "Nunu Response appears here". The source code for this website is available [here](https://github.com/elliejs/Willump/tree/main/nunu). **Use either `'*'` or `'https://zork.pw'` for Allow_Origin.**
+Once Nunu is installed and running (see below), you can test out demo code [here](https://eleanor.sh/nunu). Simply put in the host:port given to you by Nunu (looks like: `======== Running on https://192.168.1.246:8989 ========`, just write `192.168.1.246:8989`) into the text box and hit "Click here for custom lobby demo", and you will be put into a custom lobby and the response from the put request will be pasted into the webpage where it says "Nunu Response appears here". The source code for this website is available [here](https://github.com/elliejs/Willump/tree/main/nunu). **Use either `'*'` or `'https://eleanor.sh'` for Allow_Origin.** Why can't I run this from my computer by downloading the nunu website source and opening it in a browser? localhost origin is `null`, and will trigger CORS errors even when `Allow_Origin` is `'*'`. This is useful in the real world because people are dangerous and would use this to scrape your harddrive of secrets if they were allowed to access anything other than the local page from a downloaded site. For testing purposes though, this kinda sucks. You can circumvent this by setting the origin of the html page. This is left as a security-breaching excersize for the reader.
 
 ## Starting Nunu
 Nunu can be started at any time after Willump has been started and awaited.
 ```py
 import willump
 wllp = await willump.start()
-wllp = await wllp.start_nunu(Allow_Origin='YOUR_ORIGIN', ssl_key_path='YOUR_SERVER_KEY')
+wllp = await wllp.start_nunu(Allow_Origin='YOUR_ORIGIN')
 ```
 Or you can use the following start argument for slightly faster async loading if you're ok with Nunu being loaded before Willump connects to the LCU completely
 ```py
-wllp = willump.start(start_nunu=True, Allow_Origin='YOUR_ORIGIN', ssl_key_path='YOUR_SERVER_KEY')
+wllp = willump.start(with_nunu=True, Allow_Origin='YOUR_ORIGIN')
 ```
 
 ## Nunu Methods
-Nunu has the following methods:
-- `async start_nunu(self, Allow_Origin: str, ssl_key_path: str, port=None: int, host=None: ip_addr): Willump`
+Willump contains the following Nunu methods:
+- `start_nunu(self, Allow_Origin='*', sslCert=None: str, sslKey=None: str, forceNew=False: bool, port=8989: int, host=None: ip_addr): Willump`
 - `async close_nunu(self): None`
 
 These are also always available on the Willump [methods](https://github.com/elliejs/Willump/blob/main/tutorial/method_documentation.md) page.
@@ -42,8 +42,11 @@ Allow-Origin is a dangerous tool, and understanding CORS is an important step to
 
 Basically, when you talk from one server to another, you open yourself up to lots of potential threats. Be aware of these threats before making yourself vulnerable and unprepared.
 
-### ssl_key_path
-Nunu is a HTTP**S** server, because the internet these days is HTTP**S**. To make this work, Nunu needs a private SSL key. If you don't have one and don't know how to make one you can create a debug self-signed-certificate like so:
+### sslCert, sslKey
+Nunu is a HTTP**S** server, because the internet these days is HTTP**S**. To make this work, Nunu needs a private SSL key. If you don't have one and don't know how to make one, Nunu will do it for you. Simply do not provide the named arguments.
+
+### forceNew
+If for some reason Nunu must generate new ssl certs and keys (did you get PWNed?), set forceNew to `True`.
 
 **Linux**
 ```

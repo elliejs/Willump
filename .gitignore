@@ -130,3 +130,7 @@ dmypy.json
 
 # tests folder
 tests/
+
+#ssl keys and certs
+*.crt
+*.key

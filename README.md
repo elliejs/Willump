@@ -10,6 +10,8 @@
     </a>
 </p>
 
+# New in Willump 1.4.0
+Nunu got a few new tricks, and now auto generates ssl certificates and keys. Anyone can create nunu apps now without too much network administration pre-requisite information!
 
 # New in Willump 1.3.0
 Willump now handles authentication tokens with '=' inside them! Woo!
