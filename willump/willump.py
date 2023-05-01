@@ -188,7 +188,7 @@ class Willump:
     async def close_websocket(self):
         await self.ws_client.close()
         await self.ws_session.close()
-        await self.ws_loop_task
+        await self.ws_loop_task.cancel()
         await asyncio.gather(*self.subscription_tasks)
         self.websocket_alive = False
 
