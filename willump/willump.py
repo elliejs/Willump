@@ -22,6 +22,7 @@ class Willump:
         self.nunu_alive = False
         self.websocket_alive = False
         self.live_events_alive = False
+        self.close_requested = False
 
         lcu_process = None
         while not lcu_process:
@@ -81,6 +82,8 @@ class Willump:
         async def begin_ws_loop(self):
             logging.info('Starting websocket message loop')
             async for msg in self.ws_client:
+                if self.close_requested:
+                    break
                 if msg.type == aiohttp.WSMsgType.TEXT:
                     if not msg.data:
                         logging.info('got websocket message containing no data, probably just server confirming subscription success')
@@ -171,6 +174,12 @@ class Willump:
             self.ws_subscriptions[event].remove(subscription)
             if not self.ws_subscriptions:
                 await self.ws_client.send_json([Event_Code.UNSUBSCRIBE.value, event])
+
+    async def request_close(self):
+        if not self.close_requested:
+            self.close_requested = True
+        else:
+            logging.info('A request to close willump has already been sent')
 
     async def close(self):
         logging.info('Closing willump')
