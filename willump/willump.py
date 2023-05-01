@@ -102,7 +102,7 @@ class Willump:
                 elif msg.type == aiohttp.WSMsgType.CLOSED:
                     logging.info('received websocket message CLOSE, ending listening loop')
                     break
-
+            await self.close()             
         self.ws_loop_task = asyncio.create_task(begin_ws_loop(self))
         self.websocket_alive = True
         logging.info("began LCUx websocket loop")
