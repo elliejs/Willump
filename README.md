@@ -25,7 +25,7 @@ Willump is a Python3 helper for the League of Legends LCU API. Willump is asynch
 
 Willump would not exist without [lcu-driver](https://github.com/sousa-andre/lcu-driver), another driver for the League of Legends LCU API. Huge thanks to [Andre Sousa](https://github.com/sousa-andre) for creating the starting point for Willump.
 
-Documentation for the LCU can be found on the [Hextech Docs](https://www.hextechdocs.dev/lol/lcuapi), and a schema of the LCU can be found [here](http://www.mingweisamuel.com/lcu-schema/tool/).
+Documentation for the LCU can be found on the [Hextech Docs](https://www.hextechdocs.dev/tag/lcu), and a schema of the LCU can be found [here](http://www.mingweisamuel.com/lcu-schema/tool/).
 
 If you have questions about Willump or the Riot API, find me or ask a question at the [Riot Games Third Party Developer Community](https://discord.gg/riotgamesdevrel) Discord.
 
