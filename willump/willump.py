@@ -22,6 +22,7 @@ class Willump:
         self.nunu_alive = False
         self.websocket_alive = False
         self.live_events_alive = False
+        self.close_requested = False
 
         lcu_process = None
         while not lcu_process:
@@ -79,7 +80,10 @@ class Willump:
         self.subscription_tasks = []
 
         async def begin_ws_loop(self):
+            logging.info('Starting websocket message loop')
             async for msg in self.ws_client:
+                if self.close_requested:
+                    break
                 if msg.type == aiohttp.WSMsgType.TEXT:
                     if not msg.data:
                         logging.info('got websocket message containing no data, probably just server confirming subscription success')
@@ -102,7 +106,7 @@ class Willump:
                 elif msg.type == aiohttp.WSMsgType.CLOSED:
                     logging.info('received websocket message CLOSE, ending listening loop')
                     break
-
+            await self.close() 
         self.ws_loop_task = asyncio.create_task(begin_ws_loop(self))
         self.websocket_alive = True
         logging.info("began LCUx websocket loop")
@@ -171,7 +175,14 @@ class Willump:
             if not self.ws_subscriptions:
                 await self.ws_client.send_json([Event_Code.UNSUBSCRIBE.value, event])
 
+    async def request_close(self):
+        if not self.close_requested:
+            self.close_requested = True
+        else:
+            logging.info('A request to close willump has already been sent')
+
     async def close(self):
+        logging.info('Closing willump')
         if self.rest_alive:
             await self.close_rest()
         if self.websocket_alive:
@@ -180,22 +191,27 @@ class Willump:
             await self.close_nunu()
         if self.live_events_alive:
             await self.close_live_events()
+        logging.info('Willump Closed')
+        
 
     async def close_rest(self):
         await self.https_session.close()
         self.rest_alive = False
+        logging.info('Closed rest')
 
     async def close_websocket(self):
         await self.ws_client.close()
         await self.ws_session.close()
-        await self.ws_loop_task
+        self.ws_loop_task.cancel()
         await asyncio.gather(*self.subscription_tasks)
         self.websocket_alive = False
+        logging.info('Closed websocket')
 
     async def close_nunu(self):
         await self.nunu.close()
         self.nunu_alive = False
-
+        logging.info('Closed Nunu')
     async def close_live_events(self):
         await self.live_events.close()
         self.live_events_alive = False
+        logging.info('Closed live events')
